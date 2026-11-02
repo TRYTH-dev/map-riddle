@@ -1,0 +1,9 @@
+services:
+  web:
+    image: nginx:alpine
+    container_name: map-riddle-stage
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:40080:80"
+    volumes:
+      - ./html:/usr/share/nginx/html:ro

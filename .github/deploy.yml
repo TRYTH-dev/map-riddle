@@ -1,0 +1,54 @@
+name: CI/CD Deployment Pipeline
+
+on:
+  push:
+    branches:
+      - develop  # テスト環境への自動デプロイ
+      - main     # 本番環境への承認付きデプロイ
+
+jobs:
+  deploy-staging:
+    name: Deploy to Staging (Test Environment)
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Deploy to Staging via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          port: ${{ secrets.SERVER_SSH_PORT }}
+          username: tryth
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /home/tryth/apps/map-riddle-stage
+            if [ ! -d ".git" ]; then
+              git clone -b develop ${{ github.server_url }}/${{ github.repository }}.git .
+            else
+              git fetch origin develop
+              git reset --hard origin/develop
+            fi
+            docker compose -p map-riddle-stage -f compose.stage.yaml up -d
+
+  deploy-production:
+    name: Deploy to Production
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Deploy to Production via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          port: ${{ secrets.SERVER_SSH_PORT }}
+          username: tryth
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /home/tryth/apps/map-riddle-prod
+            if [ ! -d ".git" ]; then
+              git clone -b main ${{ github.server_url }}/${{ github.repository }}.git .
+            else
+              git fetch origin main
+              git reset --hard origin/main
+            fi
+            docker compose -p map-riddle-prod -f compose.prod.yaml up -d
