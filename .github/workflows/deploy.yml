@@ -28,7 +28,10 @@ jobs:
           script: |
             cd /home/tryth/apps/map-riddle-stage
             if [ ! -d ".git" ]; then
-              git clone -b develop ${{ github.server_url }}/${{ github.repository }}.git .
+              git init
+              git remote add origin https://github.com/TRYTH-dev/map-riddle.git 2>/dev/null || git remote set-url origin https://github.com/TRYTH-dev/map-riddle.git
+              git fetch origin develop
+              git checkout -f -B develop origin/develop
             else
               git fetch origin develop
               git reset --hard origin/develop
@@ -56,7 +59,10 @@ jobs:
           script: |
             cd /home/tryth/apps/map-riddle-prod
             if [ ! -d ".git" ]; then
-              git clone -b main ${{ github.server_url }}/${{ github.repository }}.git .
+              git init
+              git remote add origin https://github.com/TRYTH-dev/map-riddle.git 2>/dev/null || git remote set-url origin https://github.com/TRYTH-dev/map-riddle.git
+              git fetch origin main
+              git checkout -f -B main origin/main
             else
               git fetch origin main
               git reset --hard origin/main
