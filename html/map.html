@@ -1,0 +1,429 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <title>観光クイズマップ</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@600;700&amp;display=swap" rel="stylesheet">
+  <!-- Leaflet：地図表示 -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Meiryo", sans-serif;
+      background: #f3f4f6;
+    }
+
+    .mobile-frame {
+      width: 100%;
+      max-width: 390px;
+      height: 100dvh;
+      max-height: 844px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: white;
+      position: relative;
+    }
+
+    #map {
+      width: 100%;
+      flex: 1;
+      min-height: 0;
+      background: #e8eaed;
+      z-index: 1;
+    }
+
+    .search-panel {
+      position: absolute;
+      top: 14px;
+      left: 12px;
+      right: 12px;
+      z-index: 500;
+      background: white;
+      border-radius: 16px;
+      padding: 10px;
+      box-shadow: 0 3px 14px #0002;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    #keyword {
+      min-width: 0;
+      flex: 1;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    #search-button {
+      border: 0;
+      background: #334155;
+      color: white;
+      border-radius: 10px;
+      padding: 0 14px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    #status {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 7px;
+    }
+
+    .bottom-nav {
+      height: 76px;
+      flex-shrink: 0;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      background: white;
+      z-index: 500;
+    }
+
+    .nav-item {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      color: #64748b;
+      text-decoration: none;
+      font-size: 12px;
+    }
+
+    .nav-item.active {
+      color: #334155;
+      font-weight: bold;
+    }
+
+    .nav-icon {
+      font-size: 21px;
+      line-height: 1;
+    }
+
+    .leaflet-popup-content {
+      line-height: 1.7;
+      min-width: 150px;
+    }
+
+    .place-name {
+      font-weight: bold;
+      font-size: 15px;
+    }
+
+    .place-address {
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .place-category {
+      display: inline-block;
+      margin-top: 5px;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: #e2e8f0;
+      font-size: 11px;
+    }
+
+    @media (min-width: 500px) {
+      .mobile-frame {
+        height: 844px;
+        max-height: calc(100dvh - 32px);
+        border: 5px solid #111827;
+        border-radius: 32px;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+  <main class="mobile-frame">
+
+    <!-- 地図検索エリア -->
+    <section class="relative flex-1 flex flex-col min-h-0">
+
+      <!-- 時計・電波・Wi-Fi・電池表示は置かない -->
+      <div id="map"></div>
+
+      <!-- 検索フォーム -->
+      <div class="search-panel">
+        <form id="search-form" class="search-row">
+          <input
+            id="keyword"
+            type="text"
+            value="観光"
+            placeholder="観光地・公園・神社など"
+            aria-label="観光スポットを検索"
+          />
+          <button id="search-button" type="submit">
+            検索
+          </button>
+        </form>
+
+        <div id="status">
+          地図周辺の施設を読み込んでいます…
+        </div>
+      </div>
+    </section>
+
+    <!-- 下部メニュー -->
+    <nav class="bottom-nav">
+      <a href="map.html" class="nav-item active">
+        <span class="nav-icon">⌖</span>
+        <span>マップ</span>
+      </a>
+
+      <a href="UIcode.html" class="nav-item">
+        <span class="nav-icon">▤</span>
+        <span>スタンプ履歴</span>
+      </a>
+
+      <a href="mypage.html" class="nav-item">
+        <span class="nav-icon">♙</span>
+        <span>マイページ</span>
+      </a>
+    </nav>
+
+  </main>
+  <script>
+    // =====================================
+    // 1. 地図を初期化（神戸周辺）
+    // =====================================
+setTimeout(() => {
+  map.invalidateSize();
+}, 300);
+    const map = L.map("map", {
+      zoomControl: false
+    }).setView([34.7025, 135.1955], 13);
+
+    // OpenStreetMapの地図画像
+    L.tileLayer(
+  "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+  {
+    maxZoom: 19,
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">' +
+      'OpenStreetMap contributors</a>'
+  }
+).addTo(map);
+    // 拡大縮小ボタン
+    L.control.zoom({
+      position: "bottomright"
+    }).addTo(map);
+
+    // =====================================
+    // 2. OpenPOI APIの設定
+    // =====================================
+
+    const API_URL = "https://api.openpoiapi.com/v1/search";
+
+    // 表示中のピンを管理
+    const markers = L.layerGroup().addTo(map);
+
+    // 同じ施設を重複表示しないための管理
+    let requestNumber = 0;
+
+    const status = document.getElementById("status");
+    const keyword = document.getElementById("keyword");
+    const searchButton = document.getElementById("search-button");
+
+    // =====================================
+    // 3. APIから施設を取得してピンを表示
+    // =====================================
+
+    async function loadPlaces() {
+      const thisRequest = ++requestNumber;
+
+      const bounds = map.getBounds();
+
+      // bboxの順番は「経度,緯度,経度,緯度」
+      const bbox = [
+        bounds.getWest(),
+        bounds.getSouth(),
+        bounds.getEast(),
+        bounds.getNorth()
+      ].join(",");
+
+      const params = new URLSearchParams({
+        q: keyword.value.trim() || "観光",
+        bbox: bbox,
+        limit: "100"
+      });
+
+      status.textContent = "施設を検索しています…";
+      searchButton.disabled = true;
+
+      try {
+        const response = await fetch(
+          `${API_URL}?${params.toString()}`
+        );
+
+        if (!response.ok) {
+          throw new Error(`APIエラー: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // 新しい検索が始まっていたら古い結果を破棄
+        if (thisRequest !== requestNumber) return;
+
+        markers.clearLayers();
+
+        const places = data.results || [];
+        let displayedCount = 0;
+
+        for (const place of places) {
+          const lat = Number(place.lat);
+          const lng = Number(place.lng);
+
+          // 座標がないデータは表示しない
+          if (
+            !Number.isFinite(lat) ||
+            !Number.isFinite(lng) ||
+            lat < -90 || lat > 90 ||
+            lng < -180 || lng > 180
+          ) {
+            continue;
+          }
+
+          // 検索範囲外のピンは表示しない
+          if (!bounds.contains([lat, lng])) {
+            continue;
+          }
+
+          const name = place.name || "名称不明の施設";
+          const address = place.address ||
+            [place.prefecture, place.city]
+              .filter(Boolean)
+              .join(" ");
+
+          const category = place.category || "施設";
+
+          // ピンを作成
+          const marker = L.marker([lat, lng]);
+
+          // HTMLとして解釈されないよう文字列を安全に表示
+         
+const popupContent = document.createElement("div");
+popupContent.className = "tourism-popup";
+
+// 観光地名（APIから自動取得）
+const title = document.createElement("div");
+title.className = "tourism-title";
+title.textContent = name;
+popupContent.appendChild(title);
+
+// クイズへ進むボタン
+const quizButton = document.createElement("button");
+quizButton.className = "tourism-quiz-button";
+quizButton.textContent = "クイズへ進む";
+
+quizButton.addEventListener("click", () => {
+  alert(name + "のクイズへ進みます！");
+});
+
+popupContent.appendChild(quizButton);
+
+// ピンに吹き出しを設定
+marker.bindPopup(popupContent, {
+  className: "tourism-popup-container",
+  maxWidth: 400,
+  closeButton: false,
+  autoPan: true
+});
+
+          marker.addTo(markers);
+
+          displayedCount++;
+        }
+
+        status.textContent =
+          `${displayedCount}件の施設を表示中`;
+
+        if (displayedCount === 0) {
+          status.textContent =
+            "施設が見つかりません。キーワードを変えるか、地図を移動してください。";
+        }
+
+      } catch (error) {
+        if (thisRequest !== requestNumber) return;
+
+        console.error(error);
+
+        status.textContent =
+          "施設を取得できませんでした。通信環境を確認してください。";
+
+      } finally {
+        if (thisRequest === requestNumber) {
+          searchButton.disabled = false;
+        }
+      }
+    }
+
+    // =====================================
+    // 4. 検索ボタン
+    // =====================================
+
+    document.getElementById("search-form")
+      .addEventListener("submit", function(event) {
+        event.preventDefault();
+        loadPlaces();
+      });
+
+    // =====================================
+    // 5. 地図を移動したとき再検索
+    // =====================================
+
+    let moveTimer;
+
+    map.on("moveend", function() {
+      clearTimeout(moveTimer);
+
+      moveTimer = setTimeout(() => {
+        loadPlaces();
+      }, 350);
+    });
+
+    // =====================================
+    // 6. 初回の施設取得
+    // =====================================
+
+    loadPlaces();
+  </script>
+
+  <!-- OpenPOI APIの出典 -->
+  <footer style="display:none">
+    <a href="https://openpoiapi.com/attribution.html">
+      OpenPOI API
+    </a>
+  </footer>
+
+</body>
+</html>
