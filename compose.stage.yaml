@@ -1,9 +1,41 @@
 services:
   web:
-    image: nginx:alpine
+    build: ./docker/php
     container_name: map-riddle-stage
     restart: unless-stopped
     ports:
       - "127.0.0.1:40080:80"
     volumes:
-      - ./html:/usr/share/nginx/html:ro
+      - ./html:/var/www/html
+    environment:
+      DB_HOST: db
+      DB_NAME: ${MYSQL_DATABASE:-tryth_db}
+      DB_USER: ${MYSQL_USER:-tryth_user}
+      DB_PASS: ${MYSQL_PASSWORD:-tryth_pass}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8.0
+    container_name: map-riddle-stage-db
+    restart: unless-stopped
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-tryth_db}
+      MYSQL_USER: ${MYSQL_USER:-tryth_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-tryth_pass}
+      TZ: Asia/Tokyo
+    volumes:
+      - db_stage_data:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  db_stage_data:
