@@ -1,47 +1,264 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Map Riddle - CI/CD Pipeline Test</title>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      background-color: #0f172a;
-      color: #f8fafc;
-    }
-    .card {
-      background: #1e293b;
-      padding: 2.5rem;
-      border-radius: 12px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-      text-align: center;
-      border: 1px solid #334155;
-    }
-    h1 { margin-top: 0; color: #38bdf8; font-size: 1.8rem; }
-    p { color: #94a3b8; font-size: 1rem; margin-bottom: 0; }
-    .badge {
-      display: inline-block;
-      padding: 0.35rem 0.75rem;
-      background: #0284c7;
-      color: white;
-      border-radius: 9999px;
-      font-size: 0.85rem;
-      margin-bottom: 1rem;
-      font-weight: 600;
-    }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <div class="badge">Pipeline Active</div>
-    <h1>Map Riddle System</h1>
-    <p>Docker CI/CD Deployment is working successfully!</p>
-  </div>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+      name="viewport"
+    />
+    <meta content="mobile_blank" name="shell-type" />
+    <title>ログイン</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-tint": "#525d80",
+              "on-tertiary": "#ffffff",
+              "primary-fixed": "#dae2ff",
+              "tertiary-container": "#00322d",
+              "secondary-container": "#316bf3",
+              surface: "#f8f9ff",
+              "surface-container": "#e5eeff",
+              "inverse-on-surface": "#eaf1ff",
+              "on-error-container": "#93000a",
+              error: "#ba1a1a",
+              "surface-container-highest": "#d3e4fe",
+              "surface-container-low": "#eff4ff",
+              "secondary-fixed-dim": "#b4c5ff",
+              "on-error": "#ffffff",
+              "inverse-primary": "#bac5ee",
+              "surface-dim": "#cbdbf5",
+              "surface-container-lowest": "#ffffff",
+              "on-tertiary-container": "#2ca397",
+              "surface-bright": "#f8f9ff",
+              "on-surface": "#0b1c30",
+              "on-primary-container": "#8691b7",
+              "tertiary-fixed-dim": "#6bd8cb",
+              background: "#f8f9ff",
+              secondary: "#0051d5",
+              primary: "#081534",
+              "on-primary-fixed-variant": "#3a4667",
+              "secondary-fixed": "#dbe1ff",
+              "on-background": "#0b1c30",
+              "error-container": "#ffdad6",
+              "on-secondary": "#ffffff",
+              "on-secondary-container": "#fefcff",
+              outline: "#76777f",
+              "on-primary-fixed": "#0d1a39",
+              "on-secondary-fixed-variant": "#003ea8",
+              "tertiary-fixed": "#89f5e7",
+              "on-tertiary-fixed": "#00201d",
+              tertiary: "#001b18",
+              "outline-variant": "#c6c6cf",
+              "on-secondary-fixed": "#00174b",
+              "primary-fixed-dim": "#bac5ee",
+              "on-primary": "#ffffff",
+              "on-surface-variant": "#45464e",
+              "on-tertiary-fixed-variant": "#005049",
+              "inverse-surface": "#213145",
+              "surface-variant": "#d3e4fe",
+              "surface-container-high": "#dce9ff",
+              "primary-container": "#1e2a4a"
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px"
+            },
+            spacing: {
+              "space-xl": "2.25rem",
+              gutter: "1rem",
+              "space-md": "1rem",
+              margin: "1.25rem",
+              "space-xs": "0.25rem",
+              "space-lg": "1.5rem",
+              "space-sm": "0.5rem"
+            },
+            fontFamily: {
+              "label-lg": ["Plus Jakarta Sans", "sans-serif"],
+              "headline-lg": ["Plus Jakarta Sans", "sans-serif"],
+              "label-sm": ["Plus Jakarta Sans", "sans-serif"],
+              "body-lg": ["Plus Jakarta Sans", "sans-serif"],
+              "headline-sm": ["Plus Jakarta Sans", "sans-serif"],
+              "label-md": ["Plus Jakarta Sans", "sans-serif"],
+              "body-md": ["Plus Jakarta Sans", "sans-serif"],
+              "headline-xl-mobile": ["Plus Jakarta Sans", "sans-serif"],
+              "headline-xl": ["Plus Jakarta Sans", "sans-serif"]
+            },
+            fontSize: {
+              "label-lg": ["15px", { lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "600" }],
+              "headline-lg": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "600" }],
+              "label-sm": ["11px", { lineHeight: "14px", letterSpacing: "0.02em", fontWeight: "600" }],
+              "body-lg": ["16px", { lineHeight: "24px", letterSpacing: "0em", fontWeight: "400" }],
+              "headline-sm": ["18px", { lineHeight: "24px", letterSpacing: "0em", fontWeight: "600" }],
+              "label-md": ["13px", { lineHeight: "18px", letterSpacing: "0.01em", fontWeight: "500" }],
+              "body-md": ["14px", { lineHeight: "20px", letterSpacing: "0.005em", fontWeight: "400" }],
+              "headline-xl-mobile": ["26px", { lineHeight: "34px", letterSpacing: "-0.015em", fontWeight: "700" }],
+              "headline-xl": ["32px", { lineHeight: "40px", letterSpacing: "-0.02em", fontWeight: "700" }]
+            }
+          }
+        }
+      };
+    </script>
+    <style>
+      @layer base {
+        html, body {
+          width: 100%;
+          min-height: 100vh;
+          margin: 0;
+          padding: 0;
+          -webkit-tap-highlight-color: transparent;
+        }
+        body {
+          overscroll-behavior: none;
+        }
+        .pb-safe {
+          padding-bottom: max(env(safe-area-inset-bottom, 16px), 16px);
+        }
+        .pt-safe {
+          padding-top: max(env(safe-area-inset-top, 16px), 16px);
+        }
+      }
+      ::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+  </head>
+  <body class="bg-slate-100 font-body-md text-on-surface flex justify-center min-h-screen antialiased selection:bg-secondary-fixed selection:text-on-secondary-fixed">
+    <!-- Mobile Frame Container -->
+    <main class="w-full max-w-md bg-surface min-h-screen flex flex-col justify-between items-center px-margin pt-safe pb-safe shadow-2xl relative overflow-x-hidden border-x border-slate-200/80">
+      
+      <!-- Top Content Wrapper -->
+      <div class="flex flex-col w-full items-center justify-center my-auto py-space-md">
+        <!-- Interactive / Ambient Card Container -->
+        <div class="w-full bg-surface-container-lowest rounded-2xl p-space-lg shadow-lg border border-slate-100 relative overflow-hidden flex flex-col items-center">
+          <!-- Soft Decorative Tint Halo -->
+          <div class="absolute -top-16 -right-16 w-36 h-36 bg-surface-container-high rounded-full blur-2xl pointer-events-none opacity-60"></div>
+          <div class="absolute -bottom-16 -left-16 w-36 h-36 bg-surface-container rounded-full blur-2xl pointer-events-none opacity-60"></div>
+
+          <!-- Brand Symbol Badge -->
+          <div class="relative z-10 w-16 h-16 rounded-full bg-surface-container-low flex items-center justify-center shadow-sm mb-space-lg transition-transform active:scale-95 duration-200">
+            <div class="w-11 h-11 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-sm">
+              <span class="material-symbols-outlined text-on-primary" style="font-size: 26px; font-variation-settings: 'FILL' 1;">
+                shield_lock
+              </span>
+            </div>
+          </div>
+
+          <!-- Headings -->
+          <div class="relative z-10 flex flex-col items-center text-center mb-space-xl">
+            <h1 class="font-headline-xl-mobile text-headline-xl-mobile text-on-surface mb-space-xs tracking-tight">
+              観光客サイトログインへ
+            </h1>
+            <p class="font-body-md text-body-md text-on-surface-variant max-w-[270px] leading-relaxed">
+              Googleアカウントで安全にログインしてください
+            </p>
+          </div>
+
+          <!-- Official Styled Google Sign-In Action -->
+          <div class="relative z-10 w-full mb-space-lg">
+            <button
+              id="google-signin-btn"
+              type="button"
+              aria-label="Googleでログイン"
+              class="w-full h-[52px] rounded-xl bg-surface-container-lowest hover:bg-surface-container-low active:bg-surface-container text-on-surface border border-slate-200/80 shadow-sm active:shadow-none flex items-center justify-center gap-space-md transition-all duration-200 select-none group cursor-pointer"
+            >
+              <!-- Standard 4-color Google G Icon (SVG) -->
+              <span class="flex-shrink-0 flex items-center justify-center w-6 h-6">
+                <svg class="w-5 h-5 transition-transform group-hover:scale-105 duration-200" height="20" viewBox="0 0 24 24" width="20">
+                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"></path>
+                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"></path>
+                </svg>
+              </span>
+              <!-- Button Label -->
+              <span class="font-label-lg text-label-lg text-on-surface tracking-normal font-medium">
+                Google でログイン
+              </span>
+              <!-- Dynamic Success / Spinner Indicator -->
+              <span id="loading-spinner" class="hidden animate-spin flex-shrink-0 w-4 h-4 rounded-full border-2 border-secondary border-t-transparent"></span>
+            </button>
+          </div>
+
+          <!-- Security Assurance Indicator -->
+          <div class="relative z-10 flex items-center justify-center gap-space-xs text-on-surface-variant bg-surface-container-low px-space-md py-space-xs rounded-full shadow-xs mb-space-md max-w-full">
+            <span class="material-symbols-outlined text-secondary text-[16px] flex-shrink-0" style="font-variation-settings: 'FILL' 1;">
+              verified_user
+            </span>
+            <span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">
+              Googleの安全な認証システムを使用
+            </span>
+          </div>
+
+          <!-- Reassurance Feature Chips -->
+          <div class="relative z-10 grid grid-cols-2 gap-space-xs w-full pt-space-xs">
+            <div class="flex items-center justify-center gap-space-xs p-space-xs rounded-xl bg-surface-container-low/60 text-on-surface-variant">
+              <span class="material-symbols-outlined text-on-surface-variant text-[15px]">lock</span>
+              <span class="font-label-sm text-label-sm text-on-surface-variant">エンドツーエンド保護</span>
+            </div>
+            <div class="flex items-center justify-center gap-space-xs p-space-xs rounded-xl bg-surface-container-low/60 text-on-surface-variant">
+              <span class="material-symbols-outlined text-on-surface-variant text-[15px]">no_encryption_gmailerrorred</span>
+              <span class="font-label-sm text-label-sm text-on-surface-variant">パスワード不要</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Minimalist Legal Terms & Privacy Footer -->
+      <footer class="w-full flex flex-col items-center text-center gap-space-xs px-space-md pt-space-md max-w-[360px]">
+        <div class="flex items-center justify-center gap-space-md font-label-md text-label-md">
+          <a href="#terms" class="text-secondary hover:text-on-surface transition-colors active:opacity-70">
+            利用規約
+          </a>
+          <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+          <a href="#privacy" class="text-secondary hover:text-on-surface transition-colors active:opacity-70">
+            プライバシーポリシー
+          </a>
+        </div>
+        <p class="font-label-sm text-label-sm text-outline tracking-wider">
+          © 2026 All Rights Reserved.
+        </p>
+      </footer>
+
+      <script>
+        (function() {
+          const btn = document.getElementById('google-signin-btn');
+          const spinner = document.getElementById('loading-spinner');
+
+          if (btn) {
+            btn.addEventListener('click', function() {
+              if (spinner) {
+                spinner.classList.remove('hidden');
+              }
+              btn.classList.add('opacity-90', 'pointer-events-none');
+              
+              setTimeout(function() {
+                if (spinner) {
+                  spinner.classList.add('hidden');
+                }
+                btn.classList.remove('opacity-90', 'pointer-events-none');
+              }, 1600);
+            });
+          }
+        })();
+      </script>
+    </main>
+  </body>
 </html>
