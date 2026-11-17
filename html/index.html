@@ -32,11 +32,11 @@
               "primary-fixed": "#dae2ff",
               "tertiary-container": "#00322d",
               "secondary-container": "#316bf3",
-              surface: "#f8f9ff",
+              "surface": "#f8f9ff",
               "surface-container": "#e5eeff",
               "inverse-on-surface": "#eaf1ff",
               "on-error-container": "#93000a",
-              error: "#ba1a1a",
+              "error": "#ba1a1a",
               "surface-container-highest": "#d3e4fe",
               "surface-container-low": "#eff4ff",
               "secondary-fixed-dim": "#b4c5ff",
@@ -49,21 +49,21 @@
               "on-surface": "#0b1c30",
               "on-primary-container": "#8691b7",
               "tertiary-fixed-dim": "#6bd8cb",
-              background: "#f8f9ff",
-              secondary: "#0051d5",
-              primary: "#081534",
+              "background": "#f8f9ff",
+              "secondary": "#0051d5",
+              "primary": "#081534",
               "on-primary-fixed-variant": "#3a4667",
               "secondary-fixed": "#dbe1ff",
               "on-background": "#0b1c30",
               "error-container": "#ffdad6",
               "on-secondary": "#ffffff",
               "on-secondary-container": "#fefcff",
-              outline: "#76777f",
+              "outline": "#76777f",
               "on-primary-fixed": "#0d1a39",
               "on-secondary-fixed-variant": "#003ea8",
               "tertiary-fixed": "#89f5e7",
               "on-tertiary-fixed": "#00201d",
-              tertiary: "#001b18",
+              "tertiary": "#001b18",
               "outline-variant": "#c6c6cf",
               "on-secondary-fixed": "#00174b",
               "primary-fixed-dim": "#bac5ee",
@@ -239,25 +239,28 @@
 
       <script>
         (function() {
-          const btn = document.getElementById('google-signin-btn');
-          const spinner = document.getElementById('loading-spinner');
+    const btn = document.getElementById('google-signin-btn');
+    const spinner = document.getElementById('loading-spinner');
 
-          if (btn) {
-            btn.addEventListener('click', function() {
-              if (spinner) {
+    if (btn) {
+        btn.addEventListener('click', function() {
+
+            if (spinner) {
                 spinner.classList.remove('hidden');
-              }
-              btn.classList.add('opacity-90', 'pointer-events-none');
-              
-              setTimeout(function() {
-                if (spinner) {
-                  spinner.classList.add('hidden');
-                }
-                btn.classList.remove('opacity-90', 'pointer-events-none');
-              }, 1600);
-            });
-          }
-        })();
+            }
+
+            btn.classList.add(
+                'opacity-90',
+                'pointer-events-none'
+            );
+
+            // Google OAuth認証を開始
+            window.location.href =
+                '/api/auth/google/login';
+
+        });
+    }
+})();
       </script>
     </main>
   </body>
