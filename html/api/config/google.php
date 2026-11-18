@@ -1,4 +1,3 @@
-
 <?php
 
 // Google OAuth 設定

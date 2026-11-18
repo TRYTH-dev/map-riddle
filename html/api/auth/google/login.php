@@ -1,11 +1,9 @@
-
-<?php
-
+<?php 
 declare(strict_types=1);
 
 session_start();
 
-$config = require dirname(__DIR__, 3) . '/config/google.php';
+$config = require dirname(__DIR__, 2) .'/config/google.php';
 
 // CSRF対策用のstateを生成
 $state = bin2hex(random_bytes(32));

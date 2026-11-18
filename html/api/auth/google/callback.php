@@ -1,11 +1,10 @@
-
 <?php
 declare(strict_types=1);
 
 session_start();
 
-$config = require dirname(__DIR__, 3) . '/config/google.php';
-require_once dirname(__DIR__, 3) . '/config/db.php';
+$config = require dirname(__DIR__, 2) .'/config/google.php';
+require_once dirname(__DIR__, 2) .'/config/db.php';
 
 // Google認証エラー
 if (isset($_GET['error'])) {
@@ -129,21 +128,49 @@ try {
             'picture' => $user['picture'] ?? '',
         ];
 
-        unset($_SESSION['pending_google_user']);
-
-        header('Location: /');
+        header('Location: /map.html');
         exit;
     }
 
-    // 初回ログインの場合
-    // まだDBには登録せず、ニックネーム登録画面へ進む
-    $_SESSION['pending_google_user'] = [
+    // ==========================================
+    // 初回ログインの場合 (新規登録をここで行う)
+    // ==========================================
+    
+    // Googleから取得した名前を使用する（取得できない場合はデフォルト値を設定）
+    $defaultName = $user['name'] ?? 'ゲストユーザー';
+    $defaultLanguage = $user['locale'] ?? 'ja'; // 必要に応じてデフォルト言語を設定
+
+    // DBに新規ユーザーとして挿入
+    $insertStmt = $pdo->prepare(
+        'INSERT INTO users (google_sub, name, email, language)
+         VALUES (:google_sub, :name, :email, :language)'
+    );
+
+    $insertStmt->execute([
+        ':google_sub' => $user['sub'],
+        ':name'       => $defaultName,
+        ':email'      => $user['email'],
+        ':language'   => $defaultLanguage,
+    ]);
+
+    // 挿入したユーザーのIDを取得
+    $newUserId = $pdo->lastInsertId();
+
+    // セッションハイジャック対策
+    session_regenerate_id(true);
+
+    // セッションにログイン情報を保存
+    $_SESSION['user'] = [
+        'id'        => $newUserId,
         'google_id' => $user['sub'],
-        'email' => $user['email'],
-        'picture' => $user['picture'] ?? '',
+        'name'      => $defaultName,
+        'email'     => $user['email'],
+        'language'  => $defaultLanguage,
+        'picture'   => $user['picture'] ?? '',
     ];
 
-    header('Location: /nickname.php');
+    // そのままトップページ等へリダイレクト
+    header('Location: /');
     exit;
 
 } catch (Throwable $e) {
