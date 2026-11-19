@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+  <title>神戸市観光スタンプ帳</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script src="script/badge/tailwind-config.js"></script>
+  <style data-purpose="custom-enhancements">
+    * { -webkit-tap-highlight-color: transparent; user-select: none; }
+    .stamp-shine { background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 60%); }
+    .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 16px); }
+    .scrollbar-none::-webkit-scrollbar { display: none; }
+    .scrollbar-none { 
+      -ms-overflow-style: none;
+       scrollbar-width: none; 
+      }
+    
+    .bottom-nav {
+      height: 76px;
+      flex-shrink: 0;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      background: white;
+      z-index: 500;
+    }
+        .nav-item {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      color: #64748b;
+      text-decoration: none;
+      font-size: 12px;
+    }
+
+    .nav-item.active {
+      color: #334155;
+      font-weight: bold;
+    }
+
+    .nav-icon {
+      font-size: 21px;
+      line-height: 1;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans antialiased flex justify-center min-h-screen">
+  <div class="w-full max-w-md bg-slate-50 min-h-screen flex flex-col shadow-2xl relative pb-24 overflow-x-hidden border-x border-slate-200/80">
+    
+    <header class="bg-white/95 backdrop-blur-md sticky top-0 z-40 border-b border-slate-200/60">
+      <div class="px-5 py-2.5 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <button aria-label="戻る" class="p-1.5 -ml-1 text-slate-700 hover:text-slate-900 rounded-full hover:bg-slate-100 transition active:scale-95">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
+          <h1 class="text-lg font-bold tracking-tight text-slate-900">神戸市観光スタンプ帳</h1>
+        </div>
+      </div>
+    </header>
+
+    <main class="px-4 py-4 space-y-4 flex-1">
+      <!-- 達成サマリーカード -->
+      <section class="bg-gradient-to-br from-emerald-600 to-teal-700 rounded-2xl p-4 text-white shadow-md relative overflow-hidden">
+        <div class="absolute -right-4 -bottom-4 w-28 h-28 rounded-full bg-white/10 blur-xl pointer-events-none"></div>
+        <div class="flex justify-between items-start mb-3 relative z-10">
+          <div>
+            <span class="text-xs font-semibold uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full inline-block mb-1">KOBE COLLECTION</span>
+            <h2 class="text-lg font-bold">神戸市観光スタンプ帳</h2>
+          </div>
+        </div>
+        <div class="bg-white/15 backdrop-blur-sm rounded-xl p-3 mb-3 relative z-10 flex items-center justify-between">
+          <div class="flex items-baseline space-x-1.5">
+            <span class="text-xs text-white/80 font-medium">獲得状況:</span>
+            <span id="summary-collected" class="text-xl font-extrabold text-white leading-none">-</span>
+            <span class="text-xs text-white/70">/ <span id="summary-total">-</span> 箇所</span>
+          </div>
+          <div class="text-right">
+            <span class="text-xs text-white/80 block">達成率</span>
+            <span id="summary-percent" class="text-base font-extrabold text-amber-300 leading-none">-%</span>
+          </div>
+        </div>
+        <div class="relative z-10">
+          <div class="w-full bg-white/25 rounded-full h-2 overflow-hidden">
+            <div id="summary-progress-bar" class="bg-amber-400 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+          <div class="flex justify-between items-center text-xs text-white/80 mt-1.5">
+            <span id="summary-remaining">読み込み中...</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- エリア別フィルタータブ -->
+      <div id="filter-container" class="flex items-center space-x-2 overflow-x-auto pb-1 -mx-4 px-4 scrollbar-none">
+        <!-- JSでボタンが生成されます -->
+      </div>
+
+      <!-- スタンプ一覧グリッド -->
+      <div id="stamp-grid" class="grid grid-cols-3 gap-2.5">
+        <!-- JSでスタンプが生成されます -->
+      </div>
+    </main>
+    
+   <!-- ボトムナビゲーション (省略せずそのまま) -->
+    <!-- 下部メニュー -->
+    <nav class="bottom-nav">
+      <a href="map.html" class="nav-item active">
+        <span class="nav-icon">⌖</span>
+        <span>マップ</span>
+      </a>
+
+      <a href="badge.html" class="nav-item">
+        <span class="nav-icon">▤</span>
+        <span>スタンプ履歴</span>
+      </a>
+
+      <a href="mypage.html" class="nav-item">
+        <span class="nav-icon">♙</span>
+        <span>マイページ</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- 動的処理用 JavaScript -->
+  <script>
+    let appData = null;
+    let activeCategoryId = 'all';
+
+    // 1. データ取得（今回はダミーデータを直接代入。実際は fetch('api.php') などにします）
+    function loadData() {
+      // 本来はサーバーから取得する想定のデータ
+      appData = {
+        categories: [
+          { id: 1, name: "ウォーターフロント" },
+          { id: 2, name: "北野・三宮" },
+          { id: 3, name: "六甲・有馬" },
+          { id: 4, name: "灘・ベイエリア" }
+        ],
+        stamps: [
+          { id: 1, categoryId: 1, name: "神戸ポートタワー", shortArea: "WF", icon: "🗼", date: "2024.08.10", isCollected: true, bg: "bg-red-50", border: "border-red-500/80" },
+          { id: 2, categoryId: 2, name: "風見鶏の館", shortArea: "北野", icon: "🐓", date: "2024.08.12", isCollected: true, bg: "bg-amber-50", border: "border-amber-500/80" },
+          { id: 3, categoryId: 2, name: "生田神社", shortArea: "三宮", icon: "⛩️", date: "2024.09.01", isCollected: true, bg: "bg-red-50", border: "border-red-500/80" },
+          { id: 4, categoryId: 1, name: "南京町 中華街", shortArea: "元町", icon: "🐼", date: "2024.09.15", isCollected: true, bg: "bg-orange-50", border: "border-orange-500/80" },
+          { id: 5, categoryId: 3, name: "六甲山 天覧台", shortArea: "六甲", isCollected: false },
+          { id: 6, categoryId: 3, name: "有馬温泉 湯けむり", shortArea: "有馬", isCollected: false },
+          { id: 7, categoryId: 1, name: "BE KOBE", shortArea: "WF", isCollected: false },
+          { id: 8, categoryId: 4, name: "布引ハーブ園", shortArea: "布引", isCollected: false }
+        ]
+      };
+      renderApp();
+    }
+
+    // 2. 画面全体の描画更新
+    function renderApp() {
+      renderSummary();
+      renderFilters();
+      renderStamps();
+    }
+
+    // 3. サマリー（一番上のカード）の更新
+    function renderSummary() {
+      const total = appData.stamps.length;
+      const collected = appData.stamps.filter(s => s.isCollected).length;
+      const percent = Math.round((collected / total) * 100);
+      const remaining = total - collected;
+
+      document.getElementById('summary-collected').innerText = collected;
+      document.getElementById('summary-total').innerText = total;
+      document.getElementById('summary-percent').innerText = `${percent}%`;
+      document.getElementById('summary-progress-bar').style.width = `${percent}%`;
+      
+      document.getElementById('summary-remaining').innerText = remaining > 0 
+        ? `神戸完全制覇まであと ${remaining} 箇所` 
+        : `🎉 神戸完全制覇達成！`;
+    }
+
+    // 4. フィルタータブの生成
+    function renderFilters() {
+      const container = document.getElementById('filter-container');
+      const activeClass = "px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-600 text-white shrink-0 shadow-xs";
+      const inactiveClass = "px-3 py-1.5 rounded-full text-xs font-medium bg-white text-slate-600 border border-slate-200 shrink-0 hover:bg-slate-50 transition";
+
+      // 全体の件数
+      const allTotal = appData.stamps.length;
+      let html = `<button onclick="changeFilter('all')" class="${activeCategoryId === 'all' ? activeClass : inactiveClass}">すべて (${allTotal})</button>`;
+
+      // カテゴリごとの件数計算とボタン生成
+      appData.categories.forEach(cat => {
+        const catStamps = appData.stamps.filter(s => s.categoryId === cat.id);
+        const catCollected = catStamps.filter(s => s.isCollected).length;
+        const isActive = activeCategoryId === cat.id;
+        
+        html += `<button onclick="changeFilter(${cat.id})" class="${isActive ? activeClass : inactiveClass}">
+                  ${cat.name} (${catCollected}/${catStamps.length})
+                 </button>`;
+      });
+
+      container.innerHTML = html;
+    }
+
+    // 5. スタンプの生成
+    function renderStamps() {
+      const container = document.getElementById('stamp-grid');
+      let html = '';
+
+      // 選択されているカテゴリのみに絞り込み
+      const displayStamps = activeCategoryId === 'all' 
+        ? appData.stamps 
+        : appData.stamps.filter(s => s.categoryId === activeCategoryId);
+
+      displayStamps.forEach(stamp => {
+        if (stamp.isCollected) {
+          // 獲得済みのHTML
+          html += `
+            <div class="bg-white rounded-xl p-2.5 flex flex-col items-center justify-between text-center shadow-sm border border-emerald-100/90 relative overflow-hidden group hover:shadow-md transition active:scale-95 animate-fade-in">
+              <span class="absolute top-1.5 right-1.5 text-[10px] font-semibold px-1 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200/50">${stamp.shortArea}</span>
+              <div class="w-12 h-12 rounded-full ${stamp.bg} border-2 ${stamp.border} flex items-center justify-center shadow-inner relative mt-1">
+                <span class="text-2xl select-none group-hover:scale-110 transition-transform">${stamp.icon}</span>
+                <div class="absolute inset-0 rounded-full stamp-shine"></div>
+              </div>
+              <div class="mt-1.5 w-full">
+                <span class="text-xs font-bold text-slate-800 block truncate">${stamp.name}</span>
+                <span class="text-[10px] text-emerald-600 font-medium scale-90 block mt-0.5">${stamp.date}</span>
+              </div>
+            </div>`;
+        } else {
+          // 未獲得のHTML
+          html += `
+            <div class="bg-slate-100/70 border-2 border-dashed border-slate-300 rounded-xl p-2.5 flex flex-col items-center justify-between text-center min-h-[110px] relative animate-fade-in">
+              <span class="absolute top-1.5 right-1.5 text-[10px] font-medium px-1 py-0.5 rounded bg-slate-200/60 text-slate-500">${stamp.shortArea}</span>
+              <div class="w-11 h-11 rounded-full bg-slate-200/70 flex items-center justify-center text-slate-400 mt-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                  <rect height="10" rx="2" width="14" x="5" y="11"></rect><circle cx="12" cy="16" r="1.5"></circle><path d="M8 11V7a4 4 0 018 0v4"></path>
+                </svg>
+              </div>
+              <div class="mt-1 w-full">
+                <span class="text-xs font-medium text-slate-600 block truncate">${stamp.name}</span>
+                <span class="text-[10px] text-slate-400 block mt-0.5">未獲得・接近で解放</span>
+              </div>
+            </div>`;
+        }
+      });
+
+      container.innerHTML = html;
+    }
+
+    // 6. フィルター切り替え処理
+    function changeFilter(categoryId) {
+      activeCategoryId = categoryId;
+      renderFilters(); // タブの色と状態を更新
+      renderStamps();  // スタンプ一覧を更新
+    }
+
+    // CSSアニメーション用のスタイル追加
+    document.head.insertAdjacentHTML('beforeend', '<style>.animate-fade-in { animation: fadeIn 0.3s ease-out; } @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }</style>');
+
+    // アプリ初期化
+    loadData();
+  </script>
+</body>
+</html>
