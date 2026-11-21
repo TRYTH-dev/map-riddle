@@ -199,7 +199,11 @@
         <span>マップ</span>
       </a>
 
+
       <a href="badge.html" class="nav-item">
+
+      <a href="UIcode.html" class="nav-item">
+
         <span class="nav-icon">▤</span>
         <span>スタンプ履歴</span>
       </a>
@@ -215,6 +219,7 @@
     // =====================================
     // 1. 地図を初期化（神戸周辺）
     // =====================================
+
     setTimeout(() => {
       map.invalidateSize();
     }, 300);
@@ -231,21 +236,53 @@
         'OpenStreetMap contributors</a>'
     }).addTo(map);
 
+
+setTimeout(() => {
+  map.invalidateSize();
+}, 300);
+    const map = L.map("map", {
+      zoomControl: false
+    }).setView([34.7025, 135.1955], 13);
+
+    // OpenStreetMapの地図画像
+    L.tileLayer(
+  "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+  {
+    maxZoom: 19,
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">' +
+      'OpenStreetMap contributors</a>'
+  }
+).addTo(map);
+
     // 拡大縮小ボタン
     L.control.zoom({
       position: "bottomright"
     }).addTo(map);
 
     // =====================================
+
     // 2. PHP API設定 & 現在地（GPS）追跡
     // =====================================
     const API_URL = "api/spot.php";
     const markers = L.layerGroup().addTo(map);
+
+    // 2. OpenPOI APIの設定
+    // =====================================
+
+    const API_URL = "https://api.openpoiapi.com/v1/search";
+
+    // 表示中のピンを管理
+    const markers = L.layerGroup().addTo(map);
+
+    // 同じ施設を重複表示しないための管理
+
     let requestNumber = 0;
 
     const status = document.getElementById("status");
     const keyword = document.getElementById("keyword");
     const searchButton = document.getElementById("search-button");
+
 
     let currentUserPos = null;
     let userMarker = null;
@@ -308,6 +345,17 @@
       const thisRequest = ++requestNumber;
       const bounds = map.getBounds();
 
+
+    // =====================================
+    // 3. APIから施設を取得してピンを表示
+    // =====================================
+
+    async function loadPlaces() {
+      const thisRequest = ++requestNumber;
+
+      const bounds = map.getBounds();
+
+      // bboxの順番は「経度,緯度,経度,緯度」
       const bbox = [
         bounds.getWest(),
         bounds.getSouth(),
@@ -317,6 +365,7 @@
 
       const params = new URLSearchParams({
         q: keyword.value.trim() || "観光",
+
         bbox: bbox
       });
 
@@ -325,17 +374,29 @@
         params.append("user_lng", currentUserPos.lng);
       }
 
+
+        bbox: bbox,
+        limit: "100"
+      });
+
+
       status.textContent = "施設を検索しています…";
       searchButton.disabled = true;
 
       try {
+
         const response = await fetch(`${API_URL}?${params.toString()}`);
+
+        const response = await fetch(
+          `${API_URL}?${params.toString()}`
+        );
 
         if (!response.ok) {
           throw new Error(`APIエラー: ${response.status}`);
         }
 
         const data = await response.json();
+
         if (thisRequest !== requestNumber) return;
 
         markers.clearLayers();
@@ -424,6 +485,96 @@
         console.error(error);
         status.textContent =
           "施設を取得できませんでした。通信環境を確認してください。";
+
+        // 新しい検索が始まっていたら古い結果を破棄
+        if (thisRequest !== requestNumber) return;
+
+        markers.clearLayers();
+
+        const places = data.results || [];
+        let displayedCount = 0;
+
+        for (const place of places) {
+          const lat = Number(place.lat);
+          const lng = Number(place.lng);
+
+          // 座標がないデータは表示しない
+          if (
+            !Number.isFinite(lat) ||
+            !Number.isFinite(lng) ||
+            lat < -90 || lat > 90 ||
+            lng < -180 || lng > 180
+          ) {
+            continue;
+          }
+
+          // 検索範囲外のピンは表示しない
+          if (!bounds.contains([lat, lng])) {
+            continue;
+          }
+
+          const name = place.name || "名称不明の施設";
+          const address = place.address ||
+            [place.prefecture, place.city]
+              .filter(Boolean)
+              .join(" ");
+
+          const category = place.category || "施設";
+
+          // ピンを作成
+          const marker = L.marker([lat, lng]);
+
+          // HTMLとして解釈されないよう文字列を安全に表示
+         
+const popupContent = document.createElement("div");
+popupContent.className = "tourism-popup";
+
+// 観光地名（APIから自動取得）
+const title = document.createElement("div");
+title.className = "tourism-title";
+title.textContent = name;
+popupContent.appendChild(title);
+
+// クイズへ進むボタン
+const quizButton = document.createElement("button");
+quizButton.className = "tourism-quiz-button";
+quizButton.textContent = "クイズへ進む";
+
+quizButton.addEventListener("click", () => {
+  alert(name + "のクイズへ進みます！");
+});
+
+popupContent.appendChild(quizButton);
+
+// ピンに吹き出しを設定
+marker.bindPopup(popupContent, {
+  className: "tourism-popup-container",
+  maxWidth: 400,
+  closeButton: false,
+  autoPan: true
+});
+
+          marker.addTo(markers);
+
+          displayedCount++;
+        }
+
+        status.textContent =
+          `${displayedCount}件の施設を表示中`;
+
+        if (displayedCount === 0) {
+          status.textContent =
+            "施設が見つかりません。キーワードを変えるか、地図を移動してください。";
+        }
+
+      } catch (error) {
+        if (thisRequest !== requestNumber) return;
+
+        console.error(error);
+
+        status.textContent =
+          "施設を取得できませんでした。通信環境を確認してください。";
+
       } finally {
         if (thisRequest === requestNumber) {
           searchButton.disabled = false;
@@ -434,9 +585,15 @@
     // =====================================
     // 4. 検索ボタン
     // =====================================
+
     document
       .getElementById("search-form")
       .addEventListener("submit", function (event) {
+
+
+    document.getElementById("search-form")
+      .addEventListener("submit", function(event) {
+
         event.preventDefault();
         loadPlaces();
       });
@@ -444,9 +601,18 @@
     // =====================================
     // 5. 地図を移動したとき再検索
     // =====================================
+
     let moveTimer;
     map.on("moveend", function () {
       clearTimeout(moveTimer);
+
+
+    let moveTimer;
+
+    map.on("moveend", function() {
+      clearTimeout(moveTimer);
+
+
       moveTimer = setTimeout(() => {
         loadPlaces();
       }, 350);
@@ -455,6 +621,7 @@
     // =====================================
     // 6. 初回の施設取得
     // =====================================
+
     loadPlaces();
   </script>
 
