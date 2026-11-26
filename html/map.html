@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <title>観光クイズマップ</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&amp;family=Plus+Jakarta+Sans:wght@600;700&amp;display=swap" rel="stylesheet">
+  <!-- Leaflet：地図表示 -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Meiryo", sans-serif;
+      background: #f3f4f6;
+    }
+
+    .mobile-frame {
+      width: 100%;
+      max-width: 390px;
+      height: 100dvh;
+      max-height: 844px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: white;
+      position: relative;
+    }
+
+    #map {
+      width: 100%;
+      flex: 1;
+      min-height: 0;
+      background: #e8eaed;
+      z-index: 1;
+    }
+
+    .search-panel {
+      position: absolute;
+      top: 14px;
+      left: 12px;
+      right: 12px;
+      z-index: 500;
+      background: white;
+      border-radius: 16px;
+      padding: 10px;
+      box-shadow: 0 3px 14px #0002;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    #keyword {
+      min-width: 0;
+      flex: 1;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    #search-button {
+      border: 0;
+      background: #334155;
+      color: white;
+      border-radius: 10px;
+      padding: 0 14px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    #status {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 7px;
+    }
+
+    .bottom-nav {
+      height: 76px;
+      flex-shrink: 0;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      background: white;
+      z-index: 500;
+    }
+
+    .nav-item {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      color: #64748b;
+      text-decoration: none;
+      font-size: 12px;
+    }
+
+    .nav-item.active {
+      color: #334155;
+      font-weight: bold;
+    }
+
+    .nav-icon {
+      font-size: 21px;
+      line-height: 1;
+    }
+
+    .leaflet-popup-content {
+      line-height: 1.7;
+      min-width: 150px;
+    }
+
+    .place-name {
+      font-weight: bold;
+      font-size: 15px;
+    }
+
+    .place-address {
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .place-category {
+      display: inline-block;
+      margin-top: 5px;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: #e2e8f0;
+      font-size: 11px;
+    }
+
+    @media (min-width: 500px) {
+      .mobile-frame {
+        height: 844px;
+        max-height: calc(100dvh - 32px);
+        border: 5px solid #111827;
+        border-radius: 32px;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+  <main class="mobile-frame">
+
+    <!-- 地図検索エリア -->
+    <section class="relative flex-1 flex flex-col min-h-0">
+
+      <!-- 時計・電波・Wi-Fi・電池表示は置かない -->
+      <div id="map"></div>
+
+      <!-- 検索フォーム -->
+      <div class="search-panel">
+        <form id="search-form" class="search-row">
+          <input
+            id="keyword"
+            type="text"
+            value="観光"
+            placeholder="観光地・公園・神社など"
+            aria-label="観光スポットを検索"
+          />
+          <button id="search-button" type="submit">
+            検索
+          </button>
+        </form>
+
+        <div id="status">
+          地図周辺の施設を読み込んでいます…
+        </div>
+      </div>
+    </section>
+
+    <!-- 下部メニュー -->
+    <nav class="bottom-nav">
+      <a href="map.html" class="nav-item active">
+        <span class="nav-icon">⌖</span>
+        <span>マップ</span>
+      </a>
+
+      <a href="badge.html" class="nav-item">
+        <span class="nav-icon">▤</span>
+        <span>スタンプ履歴</span>
+      </a>
+
+      <a href="mypage.html" class="nav-item">
+        <span class="nav-icon">♙</span>
+        <span>マイページ</span>
+      </a>
+    </nav>
+
+  </main>
+  <script>
+    // =====================================
+    // 1. 地図を初期化（神戸周辺）
+    // =====================================
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 300);
+
+    const map = L.map("map", {
+      zoomControl: false
+    }).setView([34.7025, 135.1955], 15);
+
+    // OpenStreetMapの地図画像
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">' +
+        'OpenStreetMap contributors</a>'
+    }).addTo(map);
+
+    // 拡大縮小ボタン
+    L.control.zoom({
+      position: "bottomright"
+    }).addTo(map);
+
+    // =====================================
+    // 2. PHP API設定 & 現在地（GPS）追跡
+    // =====================================
+    const API_URL = "api/spot.php";
+    const markers = L.layerGroup().addTo(map);
+    let requestNumber = 0;
+
+    const status = document.getElementById("status");
+    const keyword = document.getElementById("keyword");
+    const searchButton = document.getElementById("search-button");
+
+    let currentUserPos = null;
+    let userMarker = null;
+    let userRangeCircle = null;
+    let firstGpsFix = true;
+
+    function updateUserLocation(lat, lng) {
+      currentUserPos = { lat, lng };
+
+      if (!userMarker) {
+        userMarker = L.circleMarker([lat, lng], {
+          radius: 8,
+          fillColor: "#2563eb",
+          color: "#ffffff",
+          weight: 2,
+          opacity: 1,
+          fillOpacity: 0.9
+        }).addTo(map).bindPopup("あなたの現在地");
+
+        // 半径2mの判定エリア円
+        userRangeCircle = L.circle([lat, lng], {
+          radius: 2.0,
+          color: "#2563eb",
+          fillColor: "#3b82f6",
+          fillOpacity: 0.2,
+          weight: 1
+        }).addTo(map);
+      } else {
+        userMarker.setLatLng([lat, lng]);
+        userRangeCircle.setLatLng([lat, lng]);
+      }
+
+      if (firstGpsFix) {
+        map.setView([lat, lng], 18);
+        firstGpsFix = false;
+        loadPlaces();
+      }
+    }
+
+    if ("geolocation" in navigator) {
+      navigator.geolocation.watchPosition(
+        (pos) => {
+          updateUserLocation(pos.coords.latitude, pos.coords.longitude);
+        },
+        (err) => {
+          console.warn("GPSエラー:", err);
+        },
+        {
+          enableHighAccuracy: true,
+          maximumAge: 3000,
+          timeout: 10000
+        }
+      );
+    }
+
+    // =====================================
+    // 3. PHP APIから施設と2m範囲判定を取得
+    // =====================================
+    async function loadPlaces() {
+      const thisRequest = ++requestNumber;
+      const bounds = map.getBounds();
+
+      const bbox = [
+        bounds.getWest(),
+        bounds.getSouth(),
+        bounds.getEast(),
+        bounds.getNorth()
+      ].join(",");
+
+      const params = new URLSearchParams({
+        q: keyword.value.trim() || "観光",
+        bbox: bbox
+      });
+
+      if (currentUserPos) {
+        params.append("user_lat", currentUserPos.lat);
+        params.append("user_lng", currentUserPos.lng);
+      }
+
+      status.textContent = "施設を検索しています…";
+      searchButton.disabled = true;
+
+      try {
+        const response = await fetch(`${API_URL}?${params.toString()}`);
+
+        if (!response.ok) {
+          throw new Error(`APIエラー: ${response.status}`);
+        }
+
+        const data = await response.json();
+        if (thisRequest !== requestNumber) return;
+
+        markers.clearLayers();
+        const spots = data.spots || [];
+
+        for (const spot of spots) {
+          const marker = L.marker([spot.latitude, spot.longitude]);
+
+          const popupContent = document.createElement("div");
+          popupContent.className = "tourism-popup";
+
+          // 観光地名
+          const title = document.createElement("div");
+          title.className = "tourism-title";
+          title.textContent = spot.name;
+          popupContent.appendChild(title);
+
+          // 距離ステータス表示
+          const distBadge = document.createElement("div");
+          distBadge.style.fontSize = "12px";
+          distBadge.style.margin = "4px 0 8px";
+
+          if (spot.distance_m === null) {
+            distBadge.style.color = "#64748b";
+            distBadge.textContent = "現在地を取得中...";
+          } else if (spot.is_within_range) {
+            distBadge.style.color = "#15803d";
+            distBadge.style.fontWeight = "bold";
+            distBadge.textContent = `圏内OK！（現在地から ${spot.distance_m}m）`;
+          } else {
+            distBadge.style.color = "#b91c1c";
+            distBadge.textContent = `あと ${(spot.distance_m - spot.allowed_radius_m).toFixed(1)}m 近づこう（現在 ${spot.distance_m}m）`;
+          }
+          popupContent.appendChild(distBadge);
+
+          // クイズへ進むボタン
+          const quizButton = document.createElement("button");
+          quizButton.className = "tourism-quiz-button";
+          quizButton.style.width = "100%";
+          quizButton.style.padding = "6px 10px";
+          quizButton.style.borderRadius = "6px";
+          quizButton.style.border = "none";
+          quizButton.style.fontWeight = "bold";
+
+          if (spot.is_within_range) {
+            quizButton.style.background = "#2563eb";
+            quizButton.style.color = "#ffffff";
+            quizButton.style.cursor = "pointer";
+            quizButton.textContent = "クイズへ進む";
+
+            quizButton.addEventListener("click", () => {
+              const qParams = new URLSearchParams({
+                spot_id: spot.spot_id,
+                name: spot.name,
+                lat: currentUserPos.lat,
+                lng: currentUserPos.lng
+              });
+              location.href = `quiz.html?${qParams.toString()}`;
+            });
+          } else {
+            quizButton.style.background = "#cbd5e1";
+            quizButton.style.color = "#64748b";
+            quizButton.style.cursor = "not-allowed";
+            quizButton.textContent = `半径${spot.allowed_radius_m}m以内で挑戦可能`;
+            quizButton.disabled = true;
+          }
+          popupContent.appendChild(quizButton);
+
+          marker.bindPopup(popupContent, {
+            className: "tourism-popup-container",
+            maxWidth: 400,
+            closeButton: false,
+            autoPan: true
+          });
+
+          marker.addTo(markers);
+        }
+
+        status.textContent =
+          spots.length > 0
+            ? `${spots.length}件の施設を表示中`
+            : "施設が見つかりません。キーワードを変えるか、地図を移動してください。";
+
+      } catch (error) {
+        if (thisRequest !== requestNumber) return;
+        console.error(error);
+        status.textContent =
+          "施設を取得できませんでした。通信環境を確認してください。";
+      } finally {
+        if (thisRequest === requestNumber) {
+          searchButton.disabled = false;
+        }
+      }
+    }
+
+    // =====================================
+    // 4. 検索ボタン
+    // =====================================
+    document
+      .getElementById("search-form")
+      .addEventListener("submit", function (event) {
+        event.preventDefault();
+        loadPlaces();
+      });
+
+    // =====================================
+    // 5. 地図を移動したとき再検索
+    // =====================================
+    let moveTimer;
+    map.on("moveend", function () {
+      clearTimeout(moveTimer);
+      moveTimer = setTimeout(() => {
+        loadPlaces();
+      }, 350);
+    });
+
+    // =====================================
+    // 6. 初回の施設取得
+    // =====================================
+    loadPlaces();
+  </script>
+
+  <!-- OpenPOI APIの出典 -->
+  <footer style="display:none">
+    <a href="https://openpoiapi.com/attribution.html">
+      OpenPOI API
+    </a>
+  </footer>
+
+</body>
+</html>
