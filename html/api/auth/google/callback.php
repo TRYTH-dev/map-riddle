@@ -170,7 +170,7 @@ try {
     ];
 
     // そのままトップページ等へリダイレクト
-    header('Location: html/map.html');
+    header('Location: /');
     exit;
 
 } catch (Throwable $e) {
