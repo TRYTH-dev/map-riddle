@@ -13,10 +13,11 @@ services:
       DB_USER: ${MYSQL_USER:-tryth_user}
       DB_PASS: ${MYSQL_PASSWORD:-tryth_pass}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI:-https://stage-map-riddle.zyuuuukak1n.dev/api/auth/google/callback.php}
     depends_on:
       db:
         condition: service_healthy
-
   db:
     image: mysql:8.0
     container_name: map-riddle-stage-db
