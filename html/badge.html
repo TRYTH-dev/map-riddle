@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+  <title>神戸市観光スタンプ帳</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script src="script/badge/tailwind-config.js"></script>
+  <style data-purpose="custom-enhancements">
+    * { -webkit-tap-highlight-color: transparent; user-select: none; }
+    .stamp-shine { background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 60%); }
+    .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 16px); }
+    .scrollbar-none::-webkit-scrollbar { display: none; }
+    .scrollbar-none { 
+      -ms-overflow-style: none;
+      scrollbar-width: none; 
+    }
+    
+    /* 画面下部に固定するタブバー */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 28rem; /* 外枠の max-w-md (448px) と幅を統一 */
+      height: calc(76px + env(safe-area-inset-bottom, 0px));
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      border-top: 1px solid #e5e7eb;
+      border-left: 1px solid rgba(226, 232, 240, 0.8);
+      border-right: 1px solid rgba(226, 232, 240, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(8px);
+      z-index: 500;
+    }
+
+    .nav-item {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      color: #64748b;
+      text-decoration: none;
+      font-size: 12px;
+      transition: color 0.2s;
+    }
+
+    .nav-item:hover {
+      color: #059669;
+    }
+
+    .nav-item.active {
+      color: #059669;
+      font-weight: bold;
+    }
+
+    .nav-icon {
+      font-size: 21px;
+      line-height: 1;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans antialiased flex justify-center min-h-screen">
+  <div class="w-full max-w-md bg-slate-50 min-h-screen flex flex-col shadow-2xl relative pb-24 overflow-x-hidden border-x border-slate-200/80">
+    
+    <header class="bg-white/95 backdrop-blur-md sticky top-0 z-40 border-b border-slate-200/60">
+      <div class="px-5 py-2.5 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <button aria-label="戻る" class="p-1.5 -ml-1 text-slate-700 hover:text-slate-900 rounded-full hover:bg-slate-100 transition active:scale-95">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+              <path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
+          <h1 class="text-lg font-bold tracking-tight text-slate-900">神戸市観光スタンプ帳</h1>
+        </div>
+      </div>
+    </header>
+
+    <main class="px-4 py-4 space-y-4 flex-1">
+      <!-- 達成サマリーカード -->
+      <section class="bg-gradient-to-br from-emerald-600 to-teal-700 rounded-2xl p-4 text-white shadow-md relative overflow-hidden">
+        <div class="absolute -right-4 -bottom-4 w-28 h-28 rounded-full bg-white/10 blur-xl pointer-events-none"></div>
+        <div class="flex justify-between items-start mb-3 relative z-10">
+          <div>
+            <span class="text-xs font-semibold uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full inline-block mb-1">KOBE COLLECTION</span>
+            <h2 class="text-lg font-bold">神戸市観光スタンプ帳</h2>
+          </div>
+        </div>
+        <div class="bg-white/15 backdrop-blur-sm rounded-xl p-3 mb-3 relative z-10 flex items-center justify-between">
+          <div class="flex items-baseline space-x-1.5">
+            <span class="text-xs text-white/80 font-medium">獲得状況:</span>
+            <span id="summary-collected" class="text-xl font-extrabold text-white leading-none">-</span>
+            <span class="text-xs text-white/70">/ <span id="summary-total">-</span> 箇所</span>
+          </div>
+          <div class="text-right">
+            <span class="text-xs text-white/80 block">達成率</span>
+            <span id="summary-percent" class="text-base font-extrabold text-amber-300 leading-none">-%</span>
+          </div>
+        </div>
+        <div class="relative z-10">
+          <div class="w-full bg-white/25 rounded-full h-2 overflow-hidden">
+            <div id="summary-progress-bar" class="bg-amber-400 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+          <div class="flex justify-between items-center text-xs text-white/80 mt-1.5">
+            <span id="summary-remaining">読み込み中...</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- エリア別フィルタータブ -->
+      <div id="filter-container" class="flex items-center space-x-2 overflow-x-auto pb-1 -mx-4 px-4 scrollbar-none">
+        <!-- JSでボタンが生成されます -->
+      </div>
+
+      <!-- スタンプ一覧グリッド -->
+      <div id="stamp-grid" class="grid grid-cols-3 gap-2.5">
+        <!-- JSでスタンプが生成されます -->
+      </div>
+    </main>
+    
+    <!-- 下部メニュー（画面最下部に固定） -->
+    <nav class="bottom-nav">
+      <a href="map.html" class="nav-item">
+        <span class="nav-icon">⌖</span>
+        <span>マップ</span>
+      </a>
+
+      <a href="badge.html" class="nav-item active">
+        <span class="nav-icon">▤</span>
+        <span>スタンプ履歴</span>
+      </a>
+
+      <a href="mypage.html" class="nav-item">
+        <span class="nav-icon">♙</span>
+        <span>マイページ</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- 動的処理用 JavaScript -->
+<script src="script/badge/script.js"></script>
+</body>
+</html>
