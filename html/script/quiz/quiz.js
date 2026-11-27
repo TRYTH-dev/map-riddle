@@ -3,23 +3,8 @@
 
   // API連携前の画面確認用。スポットと問題は db/init.sql の初期データに対応。
   const spots = [
-    {
-      id: "1",
-      name: "生田神社",
-      description: "「神戸」の地名の由来となった縁結びの名社。",
-      category: "神社仏閣",
-      badge: "生田神社 縁結びバッジ",
-      questions: [
-        {
-          text: "生田神社の本殿北側に広がる鎮守の森の名前は？",
-          choices: ["生田の森", "湊川の森", "六甲の森", "布引の森"],
-          correct: 0,
-          explanation: "本殿の北側には「生田の森」が広がっています。",
-        },
-      ],
-    },
-    {
-      id: "2",
+     {
+      id: "01",
       name: "神戸ポートタワー",
       description: "鼓をモチーフにした美しい曲線の観光タワー。",
       category: "ベイエリア",
@@ -33,8 +18,8 @@
         },
       ],
     },
-    {
-      id: "3",
+      {
+      id: "04",
       name: "南京町（長安門・広場）",
       description: "日本三大チャイナタウンの一つ。",
       category: "グルメ・街並み",
@@ -48,10 +33,32 @@
         },
       ],
     },
+     {
+      id: "06",
+      name: "生田神社",
+      description: "「神戸」の地名の由来となった縁結びの名社。",
+      category: "神社仏閣",
+      badge: "生田神社 縁結びバッジ",
+      questions: [
+        {
+          text: "生田神社の本殿北側に広がる鎮守の森の名前は？",
+          choices: ["生田の森", "湊川の森", "六甲の森", "布引の森"],
+          correct: 0,
+          explanation: "本殿の北側には「生田の森」が広がっています。",
+        },
+      ],
+    },
   ];
 
-  const requestedSpotId = new URLSearchParams(location.search).get("spot_id");
-  const spot = spots.find(item => item.id === requestedSpotId) ?? spots[1];
+  const params = new URLSearchParams(window.location.search);
+  const requestedSpotId = params.get("spot_id");
+
+  const spot = spots.find(item => item.id === requestedSpotId);
+
+  if (!spot) {
+  alert("観光スポットIDが指定されていないか、存在しません。");
+  return;
+  }
   const views = Object.fromEntries([...document.querySelectorAll("[data-view]")]
     .map(view => [view.dataset.view, view]));
   const heading = document.querySelector("#quiz-heading");

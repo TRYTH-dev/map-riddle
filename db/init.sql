@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS spots (
 CREATE TABLE IF NOT EXISTS quizzes (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     spot_id BIGINT NOT NULL,
-    question_order INT NOT NULL DEFAULT 1,
+    question_order INT NOT NULL DEFAULT 2,
     question_text TEXT NOT NULL,
     choice_1 VARCHAR(255) NOT NULL,
     choice_2 VARCHAR(255) NOT NULL,
