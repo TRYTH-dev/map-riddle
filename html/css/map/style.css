@@ -1,16 +1,17 @@
- * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: "Meiryo", sans-serif;
-      background: #f3f4f6;
+ body {
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.5;
+      /* 下部ナビゲーションバーの高さ分、余白（padding-bottom）を確保 */
+      padding: 6px 6px 84px;
+      display: flex;
+      justify-content: center;
     }
 
     .mobile-frame {
       width: 100%;
-      max-width: 390px;
+      max-width: 450px;
       height: 100dvh;
       max-height: 844px;
       margin: auto;
@@ -29,47 +30,33 @@
       z-index: 1;
     }
 
-    .search-panel {
+    /* 現在地取得ボタン（右下ズームコントロールの上に配置） */
+    #locate-button {
       position: absolute;
-      top: 14px;
-      left: 12px;
-      right: 12px;
+      right: 10px;
+      bottom: 86px;
       z-index: 500;
+      width: 34px;
+      height: 34px;
+      border: 2px solid rgba(0, 0, 0, 0.2);
+      border-radius: 6px;
       background: white;
-      border-radius: 16px;
-      padding: 10px;
-      box-shadow: 0 3px 14px #0002;
-    }
-
-    .search-row {
+      color: #2563eb;
+      font-size: 18px;
       display: flex;
-      gap: 8px;
-    }
-
-    #keyword {
-      min-width: 0;
-      flex: 1;
-      border: 1px solid #d1d5db;
-      border-radius: 10px;
-      padding: 10px;
-      font-size: 14px;
-      outline: none;
-    }
-
-    #search-button {
-      border: 0;
-      background: #334155;
-      color: white;
-      border-radius: 10px;
-      padding: 0 14px;
-      font-size: 14px;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
+      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
     }
 
-    #status {
-      font-size: 12px;
-      color: #64748b;
-      margin-top: 7px;
+    #locate-button:active {
+      background: #eff6ff;
+    }
+
+    #locate-button:disabled {
+      opacity: 0.6;
+      cursor: wait;
     }
 
     .bottom-nav {
@@ -128,13 +115,4 @@
       border-radius: 6px;
       background: #e2e8f0;
       font-size: 11px;
-    }
-
-    @media (min-width: 500px) {
-      .mobile-frame {
-        height: 844px;
-        max-height: calc(100dvh - 32px);
-        border: 5px solid #111827;
-        border-radius: 32px;
-      }
     }
