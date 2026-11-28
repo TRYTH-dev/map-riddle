@@ -20,14 +20,19 @@
   <style>
 
     body {
-      margin: 0;
-      font-family: "Meiryo", sans-serif;
-      background: #f3f4f6;
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.5;
+      /* 下部ナビゲーションバーの高さ分、余白（padding-bottom）を確保 */
+      padding: 6px 6px 84px;
+      display: flex;
+      justify-content: center;
     }
 
     .mobile-frame {
       width: 100%;
-      max-width: 390px;
+      max-width: 450px;
       height: 100dvh;
       max-height: 844px;
       margin: auto;
@@ -133,14 +138,6 @@
       font-size: 11px;
     }
 
-    @media (min-width: 500px) {
-      .mobile-frame {
-        height: 844px;
-        max-height: calc(100dvh - 32px);
-        border: 5px solid #111827;
-        border-radius: 32px;
-      }
-    }
   </style>
 </head>
 
@@ -211,27 +208,27 @@
     // 1-2. 神戸の観光地にピンを表示
     // =====================================
     const kobeSpots = [
-      { name: "神戸ポートタワー", lat: 34.6826, lng: 135.1867, url:"quiz.html"},
-      { name: "メリケンパーク", lat: 34.6815, lng: 135.1892, url:"quiz.html" },
-      { name: "神戸ハーバーランド umie", lat: 34.6786, lng: 135.1846, url:"quiz.html" },
-      { name: "南京町", lat: 34.6882, lng: 135.1890, url:"quiz.html"},
-      { name: "神戸旧居留地", lat: 34.6872, lng: 135.1920, url:"quiz.html" },
-      { name: "生田神社", lat: 34.6949, lng: 135.1907,url:"quiz.html"},
-      { name: "北野異人館街（風見鶏の館）", lat: 34.7014, lng: 135.1895, url:"quiz.html"},
-      { name: "神戸布引ハーブ園", lat: 34.71740, lng: 135.1912, url:"quiz.html" },
-      { name: "神戸どうぶつ王国", lat: 34.6545, lng: 135.2223, url:"quiz.html"},
-      { name: "摩耶山 掬星台", lat: 34.7339, lng: 135.2067, url:"quiz.html"},
-      { name: "六甲ガーデンテラス", lat: 34.7634, lng: 135.2464, url:"quiz.html" },
-      { name: "有馬温泉", lat: 34.7973, lng: 135.2478, url:"quiz.html" },
-      { name: "神戸須磨シーワールド", lat: 34.6439, lng: 135.1282, url:"quiz.html" }
+      { id: "01",name: "神戸ポートタワー", lat: 34.6826, lng: 135.1867, url:"quiz.html"},
+      { id: "02",name: "メリケンパーク", lat: 34.6815, lng: 135.1892, url:"quiz.html" },
+      { id: "03",name: "神戸ハーバーランド umie", lat: 34.6786, lng: 135.1846, url:"quiz.html" },
+      { id: "04",name: "南京町", lat: 34.6882, lng: 135.1890, url:"quiz.html"},
+      { id: "05",name: "神戸旧居留地", lat: 34.6872, lng: 135.1920, url:"quiz.html" },
+      { id: "06",name: "生田神社", lat: 34.6949, lng: 135.1907,url:"quiz.html"},
+      { id: "07",name: "北野異人館街（風見鶏の館）", lat: 34.7014, lng: 135.1895, url:"quiz.html"},
+      { id: "08",name: "神戸布引ハーブ園", lat: 34.71740, lng: 135.1912, url:"quiz.html" },
+      { id: "09",name: "神戸どうぶつ王国", lat: 34.6545, lng: 135.2223, url:"quiz.html"},
+      { id: "10",name: "摩耶山 掬星台", lat: 34.7339, lng: 135.2067, url:"quiz.html"},
+      { id: "11",name: "六甲ガーデンテラス", lat: 34.7634, lng: 135.2464, url:"quiz.html" },
+      { id: "12",name: "有馬温泉", lat: 34.7973, lng: 135.2478, url:"quiz.html" },
+      { id: "13",name: "神戸須磨シーワールド", lat: 34.6439, lng: 135.1282, url:"quiz.html" }
     ];
    const kobeMarkers = L.layerGroup().addTo(map);
-kobeSpots.forEach((spot) => {
+  kobeSpots.forEach((spot) => {
+  const quizUrl = `quiz.html?spot_id=${encodeURIComponent(spot.id)}`;
   L.marker([spot.lat, spot.lng])
-    .bindPopup(`<strong>${spot.name}</strong><br><a href="${spot.url}">クイズへ進む</a>`)
+    .bindPopup(`<strong>${spot.name}</strong><br><a href="${quizUrl}">クイズへ進む</a>`)
     .addTo(kobeMarkers);
-});
-    
+}); 
     // =====================================
     // 2. PHP API設定 & 現在地（GPS）追跡
     // =====================================
