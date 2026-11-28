@@ -70,3 +70,24 @@ INSERT INTO quizzes (spot_id, question_order, question_text, choice_1, choice_2,
 (1, 1, '生田神社の本殿北側に広がる鎮守の森の名前は？', '生田の森', '湊川の森', '六甲の森', '布引の森', 1, '樹齢約500年のご神木がある「生田の森」が広がっています。'),
 (2, 1, '神戸ポートタワーの形状のモチーフとなった日本の伝統楽器は？', '三味線', '鼓（つづみ）', '琴', '尺八', 2, '和楽器の「鼓」を長くしたような双曲面構造をしています。'),
 (3, 1, '南京町の東側入口（大丸神戸店側）に建つ門の名前は？', '長安門', '西安門', '南楼門', '善隣門', 1, '東の入口は「長安門」、西の入口は「西安門」と呼ばれています。');
+
+PRAGMA Foreign_keys = ON;
+
+CREATE TABLE IF NOT EXSITS sports (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    region TEXT
+);
+
+CREATE TABLE IF NOT EXSITS quizzes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    spot_id INTERGER NOT NULL,
+    question TEXT NOT NULL,
+    choice_1 TEXT NOT NULL,
+    choice_2 TEXT NOT NULL,
+    choice_3 TEXT NOT NULL,
+    choice_4 TEXT NOT NULL,
+    answer INTEGER NOT NULL CHECK (answer BETWEEN 1 AND 4),
+    explanation TEXT,
+    FOREIGN KEY (spot_id) REFERENCES sports(id)
+);

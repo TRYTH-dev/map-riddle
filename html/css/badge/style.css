@@ -1,0 +1,57 @@
+    * { -webkit-tap-highlight-color: transparent; user-select: none; }
+    .stamp-shine { background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 60%); }
+    .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 16px); }
+    .scrollbar-none::-webkit-scrollbar { display: none; }
+    .scrollbar-none { 
+      -ms-overflow-style: none;
+      scrollbar-width: none; 
+    }
+    
+    /* 画面下部に固定するタブバー */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 28rem; /* 外枠の max-w-md (448px) と幅を統一 */
+      height: calc(76px + env(safe-area-inset-bottom, 0px));
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      border-top: 1px solid #e5e7eb;
+      border-left: 1px solid rgba(226, 232, 240, 0.8);
+      border-right: 1px solid rgba(226, 232, 240, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(8px);
+      z-index: 500;
+    }
+
+    .nav-item {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      color: #64748b;
+      text-decoration: none;
+      font-size: 12px;
+      transition: color 0.2s;
+    }
+
+    .nav-item:hover {
+      color: #059669;
+    }
+
+    .nav-item.active {
+      color: #059669;
+      font-weight: bold;
+    }
+
+    .nav-icon {
+      font-size: 21px;
+      line-height: 1;
+    }

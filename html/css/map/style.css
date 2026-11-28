@@ -1,0 +1,140 @@
+ * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Meiryo", sans-serif;
+      background: #f3f4f6;
+    }
+
+    .mobile-frame {
+      width: 100%;
+      max-width: 390px;
+      height: 100dvh;
+      max-height: 844px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: white;
+      position: relative;
+    }
+
+    #map {
+      width: 100%;
+      flex: 1;
+      min-height: 0;
+      background: #e8eaed;
+      z-index: 1;
+    }
+
+    .search-panel {
+      position: absolute;
+      top: 14px;
+      left: 12px;
+      right: 12px;
+      z-index: 500;
+      background: white;
+      border-radius: 16px;
+      padding: 10px;
+      box-shadow: 0 3px 14px #0002;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    #keyword {
+      min-width: 0;
+      flex: 1;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    #search-button {
+      border: 0;
+      background: #334155;
+      color: white;
+      border-radius: 10px;
+      padding: 0 14px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    #status {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 7px;
+    }
+
+    .bottom-nav {
+      height: 76px;
+      flex-shrink: 0;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      background: white;
+      z-index: 500;
+    }
+
+    .nav-item {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      color: #64748b;
+      text-decoration: none;
+      font-size: 12px;
+    }
+
+    .nav-item.active {
+      color: #334155;
+      font-weight: bold;
+    }
+
+    .nav-icon {
+      font-size: 21px;
+      line-height: 1;
+    }
+
+    .leaflet-popup-content {
+      line-height: 1.7;
+      min-width: 150px;
+    }
+
+    .place-name {
+      font-weight: bold;
+      font-size: 15px;
+    }
+
+    .place-address {
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .place-category {
+      display: inline-block;
+      margin-top: 5px;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: #e2e8f0;
+      font-size: 11px;
+    }
+
+    @media (min-width: 500px) {
+      .mobile-frame {
+        height: 844px;
+        max-height: calc(100dvh - 32px);
+        border: 5px solid #111827;
+        border-radius: 32px;
+      }
+    }
